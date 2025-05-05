@@ -3,11 +3,11 @@ import { RootState } from "../store/store";
 import { MessageType } from "@/types/types";
 
 type InitialStateType = {
-  anyourdata: MessageType[];
+  onyourdata: MessageType[];
 };
 
 const initialState: InitialStateType = {
-  anyourdata: [],
+  onyourdata: [],
 };
 
 export const messageSlice = createSlice({
@@ -16,7 +16,7 @@ export const messageSlice = createSlice({
   reducers: {
     inputMessageToReduxStore: (state, action) => {
       if (action.payload.pathname === "/") {
-        state.anyourdata.push(action.payload);
+        state.onyourdata.push(action.payload);
       }
     },
   },
