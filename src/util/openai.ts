@@ -1,52 +1,31 @@
-import { AzureKeyCredential, OpenAIClient } from "@azure/openai";
-import axios from "axios";
+import OpenAI from "openai";
 
-export const getOnYourData = async (message: string): Promise<any[]> => {
-  return new Promise(async (resolve, reject) => {
-    const endpoint = process.env.AZURE_OPENAI_ENDPOINT!;
-    const azureApiKey = process.env.AZURE_OPENAI_API_KEY!;
-    const deploymentId = process.env.AZURE_OPENAI_DEPLOYMENT_NAME!;
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
-    console.log("🚀 ~ On your data start ~ 🚀");
-
-    const apiUrl = "";
-
-    const requestData = {
+export const getOnYourData = async (
+  message: string,
+  history: { role: string; content: string }[] = []
+) => {
+  console.log("🚀 ~ On your data start ~ 🚀");
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
       messages: [
-        {
-          role: "user",
-          content: message,
-        },
+        { role: "system", content: "You are a helpful assistant." },
+        ...history.map((msg) => ({
+          role: msg.role as "system" | "user" | "assistant",
+          content: msg.content,
+        })),
+        { role: "user", content: message },
       ],
-    };
+    });
+    console.log("🚀 ~ On your data end ~ 🚀");
 
-    const res = await axios.post(apiUrl, requestData);
-
-    const content = `
-    # 質問
-    ${message}
-    # 回答
-    ${res.data}
-    `;
-
-    const messages: any[] = [
-      {
-        role: "system",
-        content: "You are a helpful assistant.",
-      },
-      {
-        role: "user",
-        content,
-      },
-    ];
-
-    const client = new OpenAIClient(
-      endpoint,
-      new AzureKeyCredential(azureApiKey)
-    );
-
-    const result = await client.getChatCompletions(deploymentId, messages);
-
-    resolve(result.choices);
-  });
+    return response.choices;
+  } catch (error) {
+    console.error("Error with OpenAI API:", error);
+    throw new Error("Failed to fetch response from OpenAI API");
+  }
 };

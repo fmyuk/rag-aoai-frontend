@@ -32,7 +32,7 @@ const MessageItem = ({
       </div>
     </div>
   ) : (
-    <div className="flex mb-4 justify-end">
+    <div className="flex mb-4">
       <div className="flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full ml-4">
         <div className="font-medium text-gray-600">
           <FaRobot />
